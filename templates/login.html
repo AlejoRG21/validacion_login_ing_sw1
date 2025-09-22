@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Iniciar Sesión</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <div class="contenedor-principal">
+    <div class="panel-izquierdo">
+      <h1>¡Bienvenido!</h1>
+      <p>Inicie sesión para acceder a todas las funcionalidades</p>
+      <!-- CORREGIDO: ahora vuelve al registro -->
+      <button class="btn-transparente" onclick="window.location.href='/'">Registrarse</button>
+
+    </div>
+
+    <div class="panel-derecho">
+      <h2>Iniciar Sesión</h2>
+
+      <p class="texto-secundario">Ingrese sus datos para continuar</p>
+
+      <form id="loginForm" method="POST" action="/login">
+        <input type="text" id="usuario" name="usuario" placeholder="Usuario (solo letras)" required />
+        <input type="password" id="contrasena" name="contrasena" placeholder="Contraseña (solo números)" required />
+        <button type="submit" class="btn-registrar">Iniciar Sesión</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='login.js') }}"></script>
+
+</body>
+</html>

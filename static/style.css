@@ -1,0 +1,111 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f2f2f2;
+}
+
+.contenedor-principal {
+  display: flex;
+  height: 100vh;
+}
+
+.panel-izquierdo {
+  flex: 1;
+  background-color: #2798F5;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  border-top-right-radius: 80% 100%;
+  border-bottom-right-radius: 80% 100%;
+}
+
+.panel-izquierdo h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.panel-izquierdo p {
+  max-width: 300px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.btn-transparente {
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+.panel-derecho {
+  flex: 1;
+  background-color: #fff;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.panel-derecho h2 {
+  margin-bottom: 10px;
+}
+
+.icono {
+  width: 32px;
+  height: 32px;
+  background-color: #ddd;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.texto-secundario {
+  margin-bottom: 20px;
+  color: #777;
+  font-size: 0.9rem;
+}
+
+form {
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+}
+
+form input,
+form select {
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+.btn-registrar {
+  background-color: #2798F5;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btn-registrar:hover {
+  background-color: #2798F5;
+}

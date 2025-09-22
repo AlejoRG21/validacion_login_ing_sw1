@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registro</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <div class="contenedor-principal">
+    <div class="panel-izquierdo">
+      <h1>¡Hola!</h1>
+      <p>Regístrese con sus datos personales para usar todas las funciones del sitio</p>
+      <!-- CORREGIDO: antes apuntaba a registro.html, ahora usa Flask -->
+    <button class="btn-transparente" onclick="window.location.href='/login'">Iniciar Sesión</button>
+    </div>
+
+    <div class="panel-derecho">
+      <h2>Registrarse</h2>
+
+      <p class="texto-secundario">Use sus datos para registrarse</p>
+
+       <form id="registroForm" action="/registrar" method="POST">
+        <input type="text" id="nombre" name="nombre" placeholder="Nombre" required>
+        <input type="text" id="apellido" name="apellido" placeholder="Apellido" required>
+
+        <select id="tipo_documento" name="tipo_documento" required>
+          <option value="">Tipo de Documento</option>
+          <option value="DNI">Tarjeta de Identidad</option>
+          <option value="Cédula">Cédula</option>
+          <option value="Pasaporte">Cédula de Extranjería</option>  
+        </select>
+
+        <input type="text" id="documento" name="documento" placeholder="Número de Documento" required>
+        <input type="email" id="correo" name="correo" placeholder="Correo Electrónico" required>
+        <input type="tel" id="telefono" name="telefono" placeholder="Teléfono" required>
+        <input type="text" id="usuario" name="usuario" placeholder="Usuario (solo letras)" required>
+        <input type="password" id="contrasena" name="contrasena" placeholder="Contraseña (solo números)" required>
+
+        <button type="submit" class="btn-registrar">Registrarse</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
