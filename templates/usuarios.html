@@ -32,16 +32,8 @@
               <th>Teléfono</th>
             </tr>
           </thead>
-          <tbody>
-            {% for u in usuarios %}
-            <tr>
-              <td>{{ u.nombre }}</td>
-              <td>{{ u.apellido }}</td>
-              <td>{{ u.usuario }}</td>
-              <td>{{ u.correo }}</td>
-              <td>{{ u.telefono }}</td>
-            </tr>
-            {% endfor %}
+          <tbody id="tabla-usuarios">
+  <!-- Aquí JS insertará las filas -->
           </tbody>
         </table>
       </div>

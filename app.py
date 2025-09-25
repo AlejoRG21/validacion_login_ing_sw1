@@ -1,12 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # Configuración de la base de datos
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usuarios.db'  # O la URI de tu base de datos
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usuarios.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'mi_secreto'  # Necesario para usar `flash`
+
 db = SQLAlchemy(app)
 
 # Modelo de Usuario
@@ -14,74 +16,127 @@ class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     apellido = db.Column(db.String(100), nullable=False)
-    usuario = db.Column(db.String(100), unique=True, nullable=False)
-    correo = db.Column(db.String(100), unique=True, nullable=False)
-    telefono = db.Column(db.String(15), nullable=False)
-    contrasena = db.Column(db.String(100), nullable=False)
+    tipo_documento = db.Column(db.String(50), nullable=False)
+    numero_documento = db.Column(db.String(50), nullable=False, unique=True)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    telefono = db.Column(db.String(20), nullable=True)
+    usuario = db.Column(db.String(120), nullable=False, unique=True)
+    contrasena = db.Column(db.String(120), nullable=False, unique=True)
 
-    def __repr__(self):
-        return f"<Usuario {self.nombre} {self.apellido}>"
 
-# Ruta para la página de registro (index.html)
-@app.route('/')
-def index():
-    return render_template('./templates/index.html')
 
-# Ruta para registrar un nuevo usuario
-@app.route('/registrar', methods=['POST'])
-def registrar():
-    if request.method == 'POST':
-        # Obtener los datos del formulario
-        nombre = request.form['nombre']
-        apellido = request.form['apellido']
-        usuario = request.form['usuario']
-        correo = request.form['correo']
-        telefono = request.form['telefono']
-        contrasena = request.form['contrasena']
-        
-        # Verificar si el usuario ya existe
-        usuario_existente = Usuario.query.filter_by(usuario=usuario).first()
-        if usuario_existente:
-            flash('El nombre de usuario ya está registrado', 'error')
-            return redirect(url_for('index'))
-        
-        # Crear un nuevo usuario
-        nuevo_usuario = Usuario(
-            nombre=nombre, apellido=apellido, usuario=usuario,
-            correo=correo, telefono=telefono, contrasena=contrasena
-        )
-        
-        # Guardar en la base de datos
-        db.session.add(nuevo_usuario)
-        db.session.commit()
-        
-        flash('¡Registro exitoso! Ahora puedes iniciar sesión.', 'success')
-        return redirect(url_for('login'))
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'nombre': self.nombre,
+            'apellido': self.apellido,
+            'tipo_documento': self.tipo_documento,
+            'numero_documento': self.numero_documento,
+            'email': self.email,
+            'telefono': self.telefono
+            'usuario': self.usuario
+            'contrasena': self.usuario
+        }
 
-# Ruta para la página de inicio de sesión (login.html)
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        # Obtener datos del formulario de login
-        usuario = request.form['usuario']
-        contrasena = request.form['contrasena']
-        
-        # Buscar el usuario en la base de datos
-        usuario_db = Usuario.query.filter_by(usuario=usuario).first()
-        
-        if usuario_db and usuario_db.contrasena == contrasena:
-            flash('¡Inicio de sesión exitoso!', 'success')
-            return redirect(url_for('usuarios'))
-        else:
-            flash('Usuario o contraseña incorrectos', 'error')
-    
-    return render_template('./templates/login.html')
+# Crear la base de datos antes del primer request
+@app.before_first_request
+def crear_bd():
+    db.create_all()
 
-# Ruta para mostrar los usuarios registrados
-@app.route('/usuarios')
-def mostrar_usuarios():
+# Ruta para obtener todos los usuarios
+@app.route('/api/usuarios', methods=['GET'])
+def obtener_usuarios():
     usuarios = Usuario.query.all()
-    return render_template('./templates/usuarios.html', usuarios=usuarios)
+    return jsonify([usuario.to_dict() for usuario in usuarios])
 
-if __name__ == "__main__":
+# Ruta para agregar un nuevo usuario
+@app.route('/api/usuarios', methods=['POST'])
+def agregar_usuario():
+    datos = request.get_json()
+
+    # Validación básica (puedes mejorarla con marshmallow o WTForms)
+    campos_requeridos = ['nombre', 'apellido', 'tipo_documento', 'numero_documento', 'email']
+    if not all(campo in datos for campo in campos_requeridos):
+        return jsonify({'error': 'Faltan datos requeridos'}), 400
+
+    # Verificar si el email o número de documento ya existen
+    if Usuario.query.filter_by(email=datos['email']).first():
+        return jsonify({'error': 'El email ya está registrado'}), 409
+    if Usuario.query.filter_by(numero_documento=datos['numero_documento']).first():
+        return jsonify({'error': 'El número de documento ya está registrado'}), 409
+
+    nuevo_usuario = Usuario(
+        nombre=datos['nombre'],
+        apellido=datos['apellido'],
+        tipo_documento=datos['tipo_documento'],
+        numero_documento=datos['numero_documento'],
+        email=datos['email'],
+        telefono=datos.get('telefono')  # Puede ser opcional
+    )
+
+    db.session.add(nuevo_usuario)
+    db.session.commit()
+
+    return jsonify({'mensaje': 'Usuario agregado correctamente'}), 201
+from flask import request, jsonify
+from werkzeug.security import check_password_hash  # si usas hash
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    datos = request.get_json()
+    usuario = datos.get('usuario')
+    contrasena = datos.get('contrasena')
+
+    if not usuario or not contrasena:
+        return jsonify({'error': 'Faltan datos'}), 400
+
+    user = Usuario.query.filter_by(usuario=usuario).first()
+
+    if not user:
+        return jsonify({'error': 'Usuario no encontrado'}), 404
+
+    # Si estás guardando la contraseña como texto plano (NO recomendado):
+    if user.contrasena != contrasena:
+        return jsonify({'error': 'Contraseña incorrecta'}), 401
+
+    # Si usas hashes (recomendado):
+    # if not check_password_hash(user.contrasena, contrasena):
+    #     return jsonify({'error': 'Contraseña incorrecta'}), 401
+
+    return jsonify({'mensaje': 'Login exitoso'})
+    
+@app.route('/api/usuarios', methods=['POST'])
+def agregar_usuario():
+    datos = request.get_json()
+
+    # Verificar campos requeridos
+    campos = ['nombre', 'apellido', 'tipo_documento', 'numero_documento', 'email', 'telefono', 'usuario', 'contrasena']
+    if not all(campo in datos for campo in campos):
+        return jsonify({'error': 'Faltan datos'}), 400
+
+    # Verificar duplicados
+    if Usuario.query.filter_by(email=datos['email']).first():
+        return jsonify({'error': 'El email ya está registrado'}), 409
+    if Usuario.query.filter_by(numero_documento=datos['numero_documento']).first():
+        return jsonify({'error': 'El número de documento ya está registrado'}), 409
+    if Usuario.query.filter_by(usuario=datos['usuario']).first():
+        return jsonify({'error': 'El nombre de usuario ya existe'}), 409
+
+    nuevo_usuario = Usuario(
+        nombre=datos['nombre'],
+        apellido=datos['apellido'],
+        tipo_documento=datos['tipo_documento'],
+        numero_documento=datos['numero_documento'],
+        email=datos['email'],
+        telefono=datos['telefono'],
+        usuario=datos['usuario'],
+        contrasena=datos['contrasena']  # ❗ Mejor encriptarla en producción
+    )
+
+    db.session.add(nuevo_usuario)
+    db.session.commit()
+
+    return jsonify({'mensaje': 'Usuario registrado correctamente'}), 201
+
+if __name__ == '__main__':
     app.run(debug=True)
