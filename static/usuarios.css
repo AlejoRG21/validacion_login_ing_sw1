@@ -1,0 +1,102 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f2f2f2;
+}
+
+.contenedor-principal {
+  display: flex;
+  height: 100vh;
+}
+
+/* Panel izquierdo */
+.panel-izquierdo {
+  flex: 1;
+  background: linear-gradient(#1A402F, #1A3E40, #1A2B40);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  border-top-right-radius: 80% 100%;
+  border-bottom-right-radius: 80% 100%;
+}
+
+.panel-izquierdo h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.panel-izquierdo p {
+  max-width: 300px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.panel-izquierdo .btn-volver {
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 25px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* Panel derecho */
+.panel-derecho {
+  flex: 2;
+  background-color: #fff;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.panel-derecho h2 {
+  margin-bottom: 10px;
+}
+
+.texto-secundario {
+  margin-bottom: 20px;
+  color: #777;
+  font-size: 0.9rem;
+}
+
+/* Tabla */
+.tabla-contenedor {
+  width: 100%;
+  max-width: 700px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background: linear-gradient(#1A402F, #1A3E40, #1A2B40);
+  color: white;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
