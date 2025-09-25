@@ -27,5 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     alert("Inicio de sesión exitoso 🔓");
     // Aquí puedes redirigir al usuario o guardar datos si lo deseas.
+
+        window.location.href = ".././templates/usuarios.html";
+
   });
 });
